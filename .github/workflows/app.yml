@@ -27,7 +27,7 @@ jobs:
               - added|modified: "./**/*.py"
 
   pytest:
-    needs: changes
+    needs: flake8
     #if: ${{ needs.changes.outputs.py_modified == 'true' }}
     runs-on: ubuntu-latest
 
