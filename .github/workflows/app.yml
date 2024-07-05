@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, development]
   pull_request:
-    branches: [main, development]
+    branches: [main, development, '109-cache-poetry-deps']
 
 jobs:
   changes:
@@ -26,44 +26,69 @@ jobs:
             py_modified:
               - added|modified: "./**/*.py"
 
-  pytest:
+  setup:
     needs: changes
-    if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+          cache: "poetry"
 
       - name: Install dependencies
         run: poetry install
 
-      - name: run
-        run: |
-          poetry run python -m pytest tests
-
-  flake8:
-    needs: changes
-    if: ${{ needs.changes.outputs.py_modified == 'true' }}
+  pytest:
+    needs: setup
+    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
+          cache: "poetry"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Style check
+        run: |
+          poetry run flake8 ${{ needs.changes.outputs.py_modified_files }}
+
+      - name: Tests
+        run: |
+          poetry run python -m pytest tests
+
+  flake8:
+    needs: setup
+    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+          cache: "poetry"
 
       - name: Install dependencies
         run: poetry install
