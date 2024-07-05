@@ -26,8 +26,27 @@ jobs:
             py_modified:
               - added|modified: "./**/*.py"
 
-  pytest:
+  setup:
     needs: changes
+    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+          cache: "poetry"
+
+      - name: Install dependencies
+        run: poetry install
+
+  pytest:
+    needs: setup
     #if: ${{ needs.changes.outputs.py_modified == 'true' }}
     runs-on: ubuntu-latest
 
@@ -54,26 +73,26 @@ jobs:
         run: |
           poetry run python -m pytest tests
 
-#  flake8:
-#    needs: changes
-#    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - name: Install poetry
-#        run: pipx install poetry
-#
-#      - name: Setup python
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: 3.9
-#          cache: "poetry"
-#
-#      - name: Install dependencies
-#        run: poetry install
-#
-#      - name: run
-#        run: |
-#          poetry run flake8 ${{ needs.changes.outputs.py_modified_files }}
+  flake8:
+    needs: setup
+    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+          cache: "poetry"
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: run
+        run: |
+          poetry run flake8 ${{ needs.changes.outputs.py_modified_files }}
