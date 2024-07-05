@@ -67,9 +67,6 @@ jobs:
           python-version: 3.9
           cache: "poetry"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
       - name: Install dependencies
         run: poetry install
 
