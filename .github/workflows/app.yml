@@ -34,14 +34,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Setup python
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
-          #cache: "poetry"
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+          cache: "poetry"
 
       - name: Install dependencies
         run: poetry install
@@ -58,11 +58,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Setup python
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
-          #cache: "poetry"
+          cache: "poetry"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
