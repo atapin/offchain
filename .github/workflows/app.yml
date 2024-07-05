@@ -28,7 +28,7 @@ jobs:
 
   pytest:
     needs: changes
-    if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    #if: ${{ needs.changes.outputs.py_modified == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
